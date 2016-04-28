@@ -2,36 +2,12 @@ package patches
 
 import scala.reflect.ClassTag
 
+class Input[T](name: String)(implicit val tag: ClassTag[T]) {
+  private var listeners = Set[T => Unit]()
 
-class Input[A](name: String)(implicit val tag: ClassTag[A]) {
+  def receive(a: T) = for (l <- listeners) l(a)
 
+  def addListener(a: T => Unit) = listeners = listeners + a
+
+  def removeListener(a: T => Unit) = listeners = listeners - a
 }
-
-
-//Node(type, patch, def, render, callback)
-//  turnOn
-//  turnOff
-//  addInlet
-//  addOutlet
-//  removeInlet
-//  removeOutlet
-//  move
-//
-//Inlet(type, node, alias, def, render)
-//  receive
-//  stream
-//  toDefault
-//  allows
-//
-//Outlet(type, node, alias, def, render)
-//  connect
-//  disconnect
-//  send
-//  stream
-//  toDefault
-//
-//Link(outlet, inlet, label)
-//  pass
-//  enable
-//  disable
-//  disconnect
