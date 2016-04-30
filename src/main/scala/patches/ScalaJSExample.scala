@@ -1,46 +1,54 @@
 package patches
 
-import monifu.reactive.OverflowStrategy.{DropOld, DropNew}
-import monifu.reactive.channels.PublishChannel
 import org.scalajs.dom
-import org.scalajs.dom.html
+import org.scalajs.dom.{MouseEvent, html}
+import org.scalajs.dom.html.{Button, Div}
 import org.scalajs.dom.raw.AudioContext
+import patches.Draw.DrawNode
+import patches.Node.{AudioDestinationNode, Oscillator}
 
-
-import monifu.concurrent.Implicits.globalScheduler
-import monifu.reactive._
-
-//import scala.concurrent.duration.FiniteDuration
-
-import scala.reflect.runtime.universe._
-
-//import org.scalajs.dom
-//import org.scalajs.dom.html
-
+import scala.reflect.ClassTag
 import scala.scalajs.js
 
 object ScalaJSExample extends js.JSApp {
   def main(): Unit = {
-    val audioCtx = new AudioContext()
-    val container = dom.document.getElementById("playground")
-      .asInstanceOf[html.Div]
-    val canvas = dom.document.createElement("canvas")
-      .asInstanceOf[html.Canvas]
-    val canvasCtx = canvas.getContext("2d")
-      .asInstanceOf[dom.CanvasRenderingContext2D]
-    canvasCtx.lineWidth
-    canvas.height = 400
-    canvas.width = 800
-    canvas.style.border = "1px solid black"
-    container.appendChild(canvas)
-    canvasCtx.font = "20px serif"
+    val container = dom.document.getElementById("playground").asInstanceOf[Div]
+    container.style.position = "relative"
+    container.style.boxSizing = "border-box"
+    val ctx = new AudioContext()
+    val osc = Oscillator(ctx)
+    val dest = AudioDestinationNode(ctx)
+    osc.outputs(0).connect(dest.inputs(0))
 
-    val space = new Space(800, 400, canvas, canvasCtx, audioCtx)
-    space.addNode("Oscillator", 100, 20)
-    space.addNode("Gain", 100, 100)
-    space.addNode("Destination", 100, 200)
-    space.connect(space.nodes.tail.head, 0, space.nodes.head, 0)
-    space.connect(space.nodes.tail.tail.head, 0, space.nodes.tail.head, 0)
-    space.draw()
+
+    def draw(): Unit = {
+//      container.innerHTML = ""
+//      for (n <- nodes) {
+//        val child = new DrawNode(n).draw()
+//        child.appendChild(
+//          dom.document.createTextNode(
+//            n.intValue.toString + " | " + n.strValue
+//          )
+//        )
+//        container.appendChild(child)
+//      }
+//      dom.setTimeout(() => draw(), 8000)
+    }
+    draw()
+    var but = dom.document.createElement("button").asInstanceOf[Button]
+    but.textContent = "START"
+    but.style.position = "absolute"
+    but.style.left = "0px"
+    but.style.top = "300px"
+    but.onclick = (e:MouseEvent)=>osc.outputs(3)
+
+    container.parentElement.appendChild(but)
+    var but1 = dom.document.createElement("button").asInstanceOf[Button]
+    but1.textContent = "STOP"
+    but1.style.position = "absolute"
+    but1.style.left = "0px"
+    but1.style.top = "350px"
+
+    container.parentElement.appendChild(but1)
   }
 }
