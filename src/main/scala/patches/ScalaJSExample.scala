@@ -1,54 +1,60 @@
 package patches
 
 import org.scalajs.dom
-import org.scalajs.dom.{MouseEvent, html}
+import org.scalajs.dom.ext.Ajax.InputData
+import org.scalajs.dom.{Event, MouseEvent, html}
 import org.scalajs.dom.html.{Button, Div}
 import org.scalajs.dom.raw.AudioContext
 import patches.Draw.DrawNode
-import patches.Node.{AudioDestinationNode, Oscillator}
+import patches.Node._
+import patches.IO._
+import patches.Node.Math.Add
 
 import scala.reflect.ClassTag
 import scala.scalajs.js
 
 object ScalaJSExample extends js.JSApp {
   def main(): Unit = {
-    val container = dom.document.getElementById("playground").asInstanceOf[Div]
-    container.style.position = "relative"
-    container.style.boxSizing = "border-box"
-    val ctx = new AudioContext()
-    val osc = Oscillator(ctx)
-    val dest = AudioDestinationNode(ctx)
-    osc.outputs(0).connect(dest.inputs(0))
+
+    val p = dom.document.getElementById("playground").asInstanceOf[Div]
+    val c = dom.document.createElement("div").asInstanceOf[Div]
+    val outp = dom.document.createElement("div").asInstanceOf[Div]
+    p.appendChild(c)
+    p.appendChild(outp)
+    val a1 = dom.document.createElement("div").asInstanceOf[Div]
+    c.appendChild(a1)
+
+    val n = Add()
+    val right = IntOutput("one")
+    val left = DoubleOutput("one")
+    val sum = DoubleInput("one")
+
+    n.connect(n.leftInput, left, "update")
+    n.connect(n.rightInput, right, "update")
+    n.connect(sum, n.outputs(0), "update")
+    n.on("update", i=>{
+      outp.innerHTML = ""
+      outp.appendChild(DrawNode(n, 0, 0))
+    })
 
 
-    def draw(): Unit = {
-//      container.innerHTML = ""
-//      for (n <- nodes) {
-//        val child = new DrawNode(n).draw()
-//        child.appendChild(
-//          dom.document.createTextNode(
-//            n.intValue.toString + " | " + n.strValue
-//          )
-//        )
-//        container.appendChild(child)
-//      }
-//      dom.setTimeout(() => draw(), 8000)
+    sum.on("update", m => m match {
+      case msg: DoubleMessage => a1.textContent = msg.value.toString
+      case msg: IntMessage => a1.textContent = msg.value.toString
+      case _ => ;
+    })
+
+    val inp1 = dom.document.createElement("input").asInstanceOf[dom.html.Input]
+    val inp2 = dom.document.createElement("input").asInstanceOf[dom.html.Input]
+
+    inp1.onkeyup = (e: Event) => {
+      left.send(IntMessage("update", inp1.value.toInt))
     }
-    draw()
-    var but = dom.document.createElement("button").asInstanceOf[Button]
-    but.textContent = "START"
-    but.style.position = "absolute"
-    but.style.left = "0px"
-    but.style.top = "300px"
-    but.onclick = (e:MouseEvent)=>osc.outputs(3)
 
-    container.parentElement.appendChild(but)
-    var but1 = dom.document.createElement("button").asInstanceOf[Button]
-    but1.textContent = "STOP"
-    but1.style.position = "absolute"
-    but1.style.left = "0px"
-    but1.style.top = "350px"
-
-    container.parentElement.appendChild(but1)
+    inp2.onkeyup = (e: Event) => {
+      right.send(IntMessage("update", inp2.value.toInt))
+    }
+    c.appendChild(inp1)
+    c.appendChild(inp2)
   }
 }
