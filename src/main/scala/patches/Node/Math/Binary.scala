@@ -6,12 +6,13 @@ import patches.Node.Node
 
 abstract class Binary(
                        op: (Double, Double) => Double,
-                       name: String
+                       name: String,
+                       default: DoubleMessage = DoubleMessage(0)
                      ) extends Node(name) {
 
-  val leftInput = Input[Message]("A", DoubleMessage(0))
-  val rightInput = Input[Message]("B", DoubleMessage(0))
-  val resultOutput = Output[Message]("C", DoubleMessage(0))
+  val leftInput = Input[Message]("A", default)
+  val rightInput = Input[Message]("B", default)
+  val resultOutput = Output[Message]("C", default)
 
   private val left = leftInput.in
     .collect({
