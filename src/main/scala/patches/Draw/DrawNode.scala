@@ -8,6 +8,9 @@ object DrawNode {
   def apply(node: Node, x: Int, y: Int) = {
     val d = dom.document.createElement("div")
       .asInstanceOf[Div]
+    d.style.position = "absolute"
+    d.style.top = y + "px"
+    d.style.left = x + "px"
     d.classList.add("node")
     val text = dom.document.createTextNode(node.name)
     val value = dom.document.createTextNode(node.value)

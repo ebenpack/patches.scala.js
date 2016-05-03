@@ -1,36 +1,19 @@
 package patches.IO
 
-import patches.util.EventEmitter
+import monifu.concurrent.Implicits.globalScheduler
+import monifu.reactive.OverflowStrategy
+import monifu.reactive.channels.{BehaviorChannel, PublishChannel}
 
-abstract class Output(name: String) extends EventEmitter[Message] {
-  def send(message: Message)
+import scala.reflect.ClassTag
+
+class Output[T](name: String, initial: T)(implicit val tag: ClassTag[T]) {
+  private val output = BehaviorChannel[T](initial, OverflowStrategy.DropOld(100))
+  val out = output
+
+  def update(value: T) = output.pushNext(value)
 }
 
-case class StringOutput(name: String) extends Output(name) {
-  def send(message: Message) = message match {
-    case m: StringMessage => this.emit(m.name, m)
-    case _ => ;
-  }
-}
-
-case class IntOutput(name: String) extends Output(name) {
-  def send(message: Message) = message match {
-    case m: IntMessage => this.emit(m.name, m)
-    case _ => ;
-  }
-}
-
-case class DoubleOutput(name: String) extends Output(name) {
-  def send(message: Message) = message match {
-    case m: DoubleMessage => this.emit(m.name, m)
-    case m: IntMessage => this.emit(m.name, m)
-    case _ => ;
-  }
-}
-
-case class BooleanOutput(name: String) extends Output(name) {
-  def send(message: Message) = message match {
-    case m: BooleanMessage => this.emit(m.name, m)
-    case _ => ;
-  }
+object Output {
+  def apply[T: ClassTag](name: String, initial: T): Output[T] =
+    new Output[T](name, initial)
 }

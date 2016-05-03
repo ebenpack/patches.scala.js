@@ -1,59 +1,24 @@
 package patches.IO
 
-import patches.util.EventEmitter
+import monifu.reactive.OverflowStrategy
+import monifu.reactive.channels.{BehaviorChannel, SubjectChannel}
+import monifu.concurrent.Implicits.globalScheduler
+import monifu.reactive.subjects.PublishSubject
 
-abstract class Input(name: String) extends EventEmitter[Message] {
-  def receive(message: Message): Unit
+import scala.reflect.ClassTag
 
-  def canConnect(o: Output): Boolean
+class Input[T](name: String, initial: T)(implicit val tag: ClassTag[T]) {
+
+  private val input = BehaviorChannel[T](initial, OverflowStrategy.DropOld(100))
+  val in = input
+
+  def canConnect(o: Output[_]) = o.tag == tag
+
+  def update(value: T) =
+    input.pushNext(value)
 }
 
-case class StringInput(name: String) extends Input(name) {
-  def canConnect(out: Output) = out match {
-    case o: StringOutput => true
-    case _ => false
-  }
-
-  def receive(message: Message) = message match {
-    case m: StringMessage => this.emit(m.name, m)
-    case _ => ;
-  }
-}
-
-case class IntInput(name: String) extends Input(name) {
-  def canConnect(out: Output) = out match {
-    case o: IntOutput => true
-    case _ => false
-  }
-
-  def receive(message: Message) = message match {
-    case m: IntMessage => this.emit(m.name, m)
-    case _ => ;
-  }
-}
-
-case class DoubleInput(name: String) extends Input(name) {
-  def canConnect(out: Output) = out match {
-    case o: DoubleOutput => true
-    case o: IntOutput => true
-    case _ => false
-  }
-
-  def receive(message: Message) = message match {
-    case m: DoubleMessage => this.emit(m.name, m)
-    case m: IntMessage => this.emit(m.name, m)
-    case _ => ;
-  }
-}
-
-case class BooleanInput(name: String) extends Input(name) {
-  def canConnect(out: Output) = out match {
-    case o: BooleanOutput => true
-    case _ => false
-  }
-
-  def receive(message: Message) = message match {
-    case m: BooleanMessage => this.emit(m.name, m)
-    case _ => ;
-  }
+object Input {
+  def apply[T: ClassTag](name: String, initial: T): Input[T] =
+    new Input[T](name, initial)
 }

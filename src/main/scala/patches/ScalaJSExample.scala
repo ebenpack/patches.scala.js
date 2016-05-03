@@ -1,60 +1,65 @@
 package patches
 
+import monifu.reactive.Observable
+import monifu.reactive.channels.PublishChannel
 import org.scalajs.dom
-import org.scalajs.dom.ext.Ajax.InputData
 import org.scalajs.dom.{Event, MouseEvent, html}
 import org.scalajs.dom.html.{Button, Div}
-import org.scalajs.dom.raw.AudioContext
 import patches.Draw.DrawNode
-import patches.Node._
 import patches.IO._
-import patches.Node.Math.Add
+import patches.Node.Math.{Product, Sum}
 
-import scala.reflect.ClassTag
 import scala.scalajs.js
 
 object ScalaJSExample extends js.JSApp {
   def main(): Unit = {
-
+    import monifu.concurrent.Implicits.globalScheduler
     val p = dom.document.getElementById("playground").asInstanceOf[Div]
     val c = dom.document.createElement("div").asInstanceOf[Div]
     val outp = dom.document.createElement("div").asInstanceOf[Div]
+    outp.style.position = "relative"
     p.appendChild(c)
     p.appendChild(outp)
-    val a1 = dom.document.createElement("div").asInstanceOf[Div]
-    c.appendChild(a1)
 
-    val n = Add()
-    val right = IntOutput("one")
-    val left = DoubleOutput("one")
-    val sum = DoubleInput("one")
 
-    n.connect(n.leftInput, left, "update")
-    n.connect(n.rightInput, right, "update")
-    n.connect(sum, n.outputs(0), "update")
-    n.on("update", i=>{
-      outp.innerHTML = ""
-      outp.appendChild(DrawNode(n, 0, 0))
+    val n = new Sum()
+    n.inputs(0).update(DoubleMessage(0))
+    n.inputs(1).update(DoubleMessage(0))
+    n.outputs(0).out.foreach(println(_))
+    n.outputs(0).out.foreach({
+      case m: DoubleMessage => outp.textContent = m.value.toString
     })
 
+    val inp1 = dom.document.createElement("input")
+      .asInstanceOf[dom.html.Input]
+    val inp2 = dom.document.createElement("input")
+      .asInstanceOf[dom.html.Input]
+    inp1.value = "0"
+    inp2.value = "0"
 
-    sum.on("update", m => m match {
-      case msg: DoubleMessage => a1.textContent = msg.value.toString
-      case msg: IntMessage => a1.textContent = msg.value.toString
-      case _ => ;
-    })
+    inp1.onkeyup = (e: Event) =>
+      n.inputs(0).update(DoubleMessage(inp1.value.toDouble))
+    
+    inp2.onkeyup = (e: Event) =>
+      n.inputs(1).update(DoubleMessage(inp2.value.toDouble))
 
-    val inp1 = dom.document.createElement("input").asInstanceOf[dom.html.Input]
-    val inp2 = dom.document.createElement("input").asInstanceOf[dom.html.Input]
-
-    inp1.onkeyup = (e: Event) => {
-      left.send(IntMessage("update", inp1.value.toInt))
-    }
-
-    inp2.onkeyup = (e: Event) => {
-      right.send(IntMessage("update", inp2.value.toInt))
-    }
     c.appendChild(inp1)
     c.appendChild(inp2)
+
+//
+//    n.on("update", i=>{
+//      outp.innerHTML = ""
+//      outp.appendChild(DrawNode(n, 0, 0))
+//      outp.appendChild(DrawNode(prod, 30, 40))
+//    })
+//    prod.on("update", i=>{
+//      outp.innerHTML = ""
+//      outp.appendChild(DrawNode(n, 0, 0))
+//      outp.appendChild(DrawNode(prod, 30, 40))
+//    })
+//    outp.appendChild(DrawNode(n, 0, 0))
+//    outp.appendChild(DrawNode(prod, 30, 40))
+//
+
   }
 }
