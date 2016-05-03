@@ -22,11 +22,12 @@ object ScalaJSExample extends js.JSApp {
     p.appendChild(outp)
 
 
-    val n = new Sum()
-    n.inputs(0).update(DoubleMessage(0))
-    n.inputs(1).update(DoubleMessage(0))
-    n.outputs(0).out.foreach(println(_))
-    n.outputs(0).out.foreach({
+    val n = Sum()
+    val prod = Product()
+    prod.connect(prod.inputs(0), n.outputs(0))
+    prod.inputs(1).update(DoubleMessage(2))
+    prod.outputs(0).out.foreach(println(_))
+    prod.outputs(0).out.foreach({
       case m: DoubleMessage => outp.textContent = m.value.toString
     })
 
@@ -39,7 +40,7 @@ object ScalaJSExample extends js.JSApp {
 
     inp1.onkeyup = (e: Event) =>
       n.inputs(0).update(DoubleMessage(inp1.value.toDouble))
-    
+
     inp2.onkeyup = (e: Event) =>
       n.inputs(1).update(DoubleMessage(inp2.value.toDouble))
 
