@@ -1,34 +1,32 @@
 package patches
 
-import monifu.reactive.Observable
+import com.sun.xml.internal.ws.dump.LoggingDumpTube.Position
+import japgolly.scalajs.react.ReactDOM
+import monifu.reactive.OverflowStrategy
 import monifu.reactive.channels.PublishChannel
 import org.scalajs.dom
-import org.scalajs.dom.{Event, MouseEvent, html}
-import org.scalajs.dom.html.{Button, Div}
-import patches.Draw.DrawNode
+import org.scalajs.dom.{Event, MouseEvent}
+import org.scalajs.dom.html.Div
+import patches.Draw.Node.{Props, State}
 import patches.IO._
 import patches.Node.Math.{Product, Sum}
 
 import scala.scalajs.js
+import scala.util.Try
 
 object ScalaJSExample extends js.JSApp {
   def main(): Unit = {
     import monifu.concurrent.Implicits.globalScheduler
-    val p = dom.document.getElementById("playground").asInstanceOf[Div]
-    val c = dom.document.createElement("div").asInstanceOf[Div]
-    val outp = dom.document.createElement("div").asInstanceOf[Div]
-    outp.style.position = "relative"
-    p.appendChild(c)
-    p.appendChild(outp)
-
 
     val n = Sum()
     val prod = Product()
+
+    n.inputs(0).update(DoubleMessage(3))
     prod.connect(prod.inputs(0), n.outputs(0))
-    prod.inputs(1).update(DoubleMessage(2))
-    prod.outputs(0).out.foreach(println(_))
+    prod.inputs(1).update(DoubleMessage(5))
     prod.outputs(0).out.foreach({
-      case m: DoubleMessage => outp.textContent = m.value.toString
+      case m: DoubleMessage => {}
+      case _ => {}
     })
 
     val inp1 = dom.document.createElement("input")
@@ -39,28 +37,20 @@ object ScalaJSExample extends js.JSApp {
     inp2.value = "0"
 
     inp1.onkeyup = (e: Event) =>
-      n.inputs(0).update(DoubleMessage(inp1.value.toDouble))
+      Try(DoubleMessage(inp1.value.toDouble))
+        .map(n.inputs(0).update(_))
+
 
     inp2.onkeyup = (e: Event) =>
-      n.inputs(1).update(DoubleMessage(inp2.value.toDouble))
+      Try(DoubleMessage(inp1.value.toDouble))
+        .map(n.inputs(0).update(_))
 
-    c.appendChild(inp1)
-    c.appendChild(inp2)
+    val node1 = patches.Draw.Node(Props(prod))
+    ReactDOM.render(
+      node1(),
+      dom.document.getElementById("playground")
+    )
 
-//
-//    n.on("update", i=>{
-//      outp.innerHTML = ""
-//      outp.appendChild(DrawNode(n, 0, 0))
-//      outp.appendChild(DrawNode(prod, 30, 40))
-//    })
-//    prod.on("update", i=>{
-//      outp.innerHTML = ""
-//      outp.appendChild(DrawNode(n, 0, 0))
-//      outp.appendChild(DrawNode(prod, 30, 40))
-//    })
-//    outp.appendChild(DrawNode(n, 0, 0))
-//    outp.appendChild(DrawNode(prod, 30, 40))
-//
 
   }
 }
