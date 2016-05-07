@@ -14,22 +14,28 @@ abstract class Binary(
   val rightInput = Input[Message]("B", default)
   val resultOutput = Output[Message]("C", default)
 
-  private val left = leftInput.in
+  protected var leftVal, rightVal, resultVal: Double = default.value
+  protected val left = leftInput.in
     .collect({
       case m: DoubleMessage => m
       case m: IntMessage => m.toDoubleMessage
     })
 
-  private val right = rightInput.in
+  protected val right = rightInput.in
     .collect({
       case m: DoubleMessage => m
       case m: IntMessage => m.toDoubleMessage
     })
 
-  left.combineLatest(right)
+  protected val result = left.combineLatest(right)
     .map({
-      case (l, r) => DoubleMessage(op(l.value, r.value))
-    }).foreach(resultOutput.update(_))
+      case (l, r) =>
+        leftVal = l.value
+        rightVal = r.value
+        resultVal = op(l.value, r.value)
+        DoubleMessage(resultVal)
+    })
+  result.foreach(resultOutput.update(_))
 
   val inputs = List[Input[Message]](
     leftInput,
