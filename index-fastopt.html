@@ -5,27 +5,31 @@
   <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
   <style>
     .draggable {
-    width: 100px;
-    height : 100px;
-    position : absolute;
-    left : 0;
-    left : 0;
-    border : 1px solid black;
-    cursor: move;
-    -webkit-user-select: none;
-    -moz-user-select: none;
-    -ms-user-select: none;
-    user-select: none;
+      width: 100px;
+      height : 100px;
+      position : absolute;
+      left : 0;
+      top : 0;
+      border : 1px solid black;
+      cursor: move;
+      -webkit-user-select: none;
+      -moz-user-select: none;
+      -ms-user-select: none;
+      user-select: none;
     }
     .node {
-    border: 1px solid black;
+      border: 1px solid black;
+    }
+    #playground {
+      position: relative;
     }
   </style>
 </head>
 <body>
 
 <div id="playground"></div>
-
+<script src="https://cdnjs.cloudflare.com/ajax/libs/react/0.14.6/react.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/react/0.14.6/react-dom.js"></script>
 <script type="text/javascript" src="./target/scala-2.11/example-fastopt.js"></script>
 <script type="text/javascript" src="./target/scala-2.11/example-launcher.js"></script>
 
