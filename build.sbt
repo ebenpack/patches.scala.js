@@ -9,16 +9,27 @@ scalaVersion := "2.11.8"
 
 persistLauncher in Compile := true
 
-persistLauncher in Test := false
-
-//testFrameworks += new TestFramework("utest.runner.Framework")
-
 libraryDependencies ++= Seq(
-  "org.scala-js" %%% "scalajs-dom" % "0.8.2",
-  "com.lihaoyi" %%% "utest" % "0.3.0" % "test",
-  //"org.scala-lang.modules" %% "scala-async" % "0.9.5",
-  "org.monifu" %%% "monifu" % "1.2"
-  //"com.thoughtworks.binding" %%% "dom" % "latest.release"
+  "org.monifu" %%% "monifu" % "1.2",
+  "com.github.japgolly.scalajs-react" %%% "core" % "0.11.1",
+  "com.github.japgolly.scalajs-react" %%% "extra" % "0.11.1"
 )
 
-//addCompilerPlugin("org.scalamacros" % "paradise" % "2.1.0" cross CrossVersion.full)
+jsDependencies ++= Seq(
+
+  "org.webjars.bower" % "react" % "15.0.2"
+    / "react-with-addons.js"
+    minified "react-with-addons.min.js"
+    commonJSName "React",
+
+  "org.webjars.bower" % "react" % "15.0.2"
+    / "react-dom.js"
+    minified "react-dom.min.js"
+    dependsOn "react-with-addons.js"
+    commonJSName "ReactDOM",
+
+  "org.webjars.bower" % "react" % "15.0.2"
+    / "react-dom-server.js"
+    minified "react-dom-server.min.js"
+    dependsOn "react-dom.js"
+    commonJSName "ReactDOMServer")
