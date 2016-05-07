@@ -8,7 +8,7 @@ import scala.reflect.ClassTag
 
 class Output[T](name: String, initial: T)(implicit val tag: ClassTag[T]) {
   private val output = BehaviorChannel[T](initial, OverflowStrategy.DropOld(100))
-  val out = output.publish
+  val out = output.behavior(initial)
   out.connect()
 
   def update(value: T) = output.pushNext(value)
