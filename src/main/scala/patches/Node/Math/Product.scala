@@ -1,7 +1,7 @@
 package patches.Node.Math
 
 class Product extends Binary(_*_, "Product") {
-  def value = "" // s"∏ ($left, $right) = $result"
+  def value = s"∏($leftVal, $rightVal = $resultVal)"
 }
 
 object Product {

@@ -1,7 +1,7 @@
 package patches.Node.Math
 
 class Sum extends Binary(_+_, "Sum") {
-  def value = "" // s"∑ ($left, $right) = $result"
+  def value = s"∑($leftVal, $rightVal = $resultVal)"
 }
 
 object Sum {
