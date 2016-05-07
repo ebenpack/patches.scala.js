@@ -17,9 +17,7 @@ abstract class Node(val name: String) {
 
   def connect(i: Input[Message], o: Output[Message]) = (i, o) match {
     case (in, out) if in.canConnect(out) && !disconnects.contains((in, out)) => {
-      println("CONNECTIN!")
       val cancel = out.out.subscribe(f => {
-        println("ACK", f)
         in.update(f)
         Continue
       })
