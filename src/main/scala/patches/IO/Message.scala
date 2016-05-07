@@ -1,6 +1,8 @@
 package patches.IO
 
-abstract class Message
+sealed abstract class Message
+
+case class TypedMessage[T](value: T) extends Message
 
 case class DoubleMessage(value: Double) extends Message
 
