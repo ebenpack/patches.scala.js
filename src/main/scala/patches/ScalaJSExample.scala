@@ -1,12 +1,8 @@
 package patches
 
-import com.sun.xml.internal.ws.dump.LoggingDumpTube.Position
 import japgolly.scalajs.react.ReactDOM
-import monifu.reactive.OverflowStrategy
-import monifu.reactive.channels.PublishChannel
 import org.scalajs.dom
 import org.scalajs.dom.{Event, MouseEvent}
-import org.scalajs.dom.html.Div
 import patches.Draw.Node.{Props, State}
 import patches.IO._
 import patches.Node.Math.{Product, Sum}
@@ -40,7 +36,6 @@ object ScalaJSExample extends js.JSApp {
       Try(DoubleMessage(inp1.value.toDouble))
         .map(n.inputs(0).update(_))
 
-
     inp2.onkeyup = (e: Event) =>
       Try(DoubleMessage(inp1.value.toDouble))
         .map(n.inputs(0).update(_))
@@ -50,7 +45,6 @@ object ScalaJSExample extends js.JSApp {
       node1(),
       dom.document.getElementById("playground")
     )
-
 
   }
 }
