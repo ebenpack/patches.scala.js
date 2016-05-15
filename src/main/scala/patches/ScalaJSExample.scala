@@ -8,43 +8,48 @@ import patches.IO._
 import patches.Node.Math.{Product, Sum}
 
 import scala.scalajs.js
-import scala.util.Try
+import monix.execution.Scheduler.Implicits.global
+import monix.reactive.OverflowStrategy.DropOld
+import monix.reactive.subjects.{BehaviorSubject, ConcurrentSubject}
 
 object ScalaJSExample extends js.JSApp {
   def main(): Unit = {
-    import monifu.concurrent.Implicits.globalScheduler
 
     val n = Sum()
     val prod = Product()
 
-    n.inputs(0).update(DoubleMessage(3))
-    prod.connect(prod.inputs(0), n.outputs(0))
+    n.inputs(1).update(DoubleMessage(3))
+    prod.connect(n.inputs(0), prod.outputs(0))
     prod.inputs(1).update(DoubleMessage(5))
-    prod.outputs(0).out.foreach({
-      case m: DoubleMessage => {}
-      case _ => {}
-    })
 
-    val inp1 = dom.document.createElement("input")
-      .asInstanceOf[dom.html.Input]
-    val inp2 = dom.document.createElement("input")
-      .asInstanceOf[dom.html.Input]
-    inp1.value = "0"
-    inp2.value = "0"
+    var g = 6
+    dom.window.setTimeout(
+      () => dom.window.setInterval(() => {
+        prod.inputs(0).update(DoubleMessage(g))
+        g = g + 1
+      }, 2000)
+      , 1000)
 
-    inp1.onkeyup = (e: Event) =>
-      Try(DoubleMessage(inp1.value.toDouble))
-        .map(n.inputs(0).update(_))
+    var h = 8
+    dom.window.setInterval(() => {
+      prod.inputs(1).update(DoubleMessage(h))
+      h = h + 1
+    }, 2000)
 
-    inp2.onkeyup = (e: Event) =>
-      Try(DoubleMessage(inp1.value.toDouble))
-        .map(n.inputs(0).update(_))
 
-    val node1 = patches.Draw.Node(Props(prod))
+    val node1 = patches.Draw.Canvas(
+      patches.Draw.Canvas.Props(
+        List(
+          prod,
+          n
+        )
+      )
+    )
     ReactDOM.render(
       node1(),
       dom.document.getElementById("playground")
     )
+
 
   }
 }
