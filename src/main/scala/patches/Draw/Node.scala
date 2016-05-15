@@ -1,23 +1,22 @@
 package patches.Draw
 
 import patches.Node.{Node => N}
-
 import japgolly.scalajs.react._
 import japgolly.scalajs.react.extra.EventListener
 import japgolly.scalajs.react.vdom.prefix_<^._
 import japgolly.scalajs.react.extra.OnUnmount
-
-import org.scalajs.dom, dom.MouseEvent
-
-import monifu.reactive.OverflowStrategy
-import monifu.reactive.channels.PublishChannel
-import monifu.concurrent.Implicits.globalScheduler
+import org.scalajs.dom
+import dom.MouseEvent
+import monix.reactive.MulticastStrategy
+import monix.execution.Scheduler.Implicits.global
+import monix.reactive.OverflowStrategy.DropOld
+import monix.reactive.subjects.ConcurrentSubject
 
 object Node {
 
   case class Props(node: N)
 
-  case class State(x: Int, y: Int)
+  case class State(x: Int, y: Int, v: String)
 
   class Backend($: BackendScope[Props, State]) extends OnUnmount {
 
@@ -29,8 +28,8 @@ object Node {
                  val eventType: String
                )
 
-    val mouseDownChannel = PublishChannel[Mouse](OverflowStrategy.DropOld(100))
-    val mouseMoveChannel = PublishChannel[Mouse](OverflowStrategy.DropOld(100))
+    val mouseDownChannel = ConcurrentSubject[Mouse](MulticastStrategy.publish, DropOld(100))
+    val mouseMoveChannel = ConcurrentSubject[Mouse](MulticastStrategy.publish, DropOld(100))
 
     mouseDownChannel
       .flatMap(downEvent => {
@@ -50,24 +49,35 @@ object Node {
             new Mouse(startPosX + deltaX, startPosY + deltaY, m.eventType)
           })
       })
-      .foreach(m =>
+      .foreach(m => {
+        val s = $.state.runNow()
         $.setState(
-          new State(m.clientX.toInt, m.clientY.toInt)
+          new State(m.clientX.toInt, m.clientY.toInt, s.v)
         ).runNow()
-      )
+      })
 
     def handleMouseDown(e: ReactMouseEventH) =
       Callback {
-        mouseDownChannel.pushNext(
+        mouseDownChannel.onNext(
           new Mouse(e.clientX, e.clientY, e.eventType)
         )
       }
 
     def handleMouseMove(e: dom.MouseEvent) = {
       Callback {
-        mouseMoveChannel.pushNext(
+        mouseMoveChannel.onNext(
           new Mouse(e.clientX, e.clientY, e.`type`)
         )
+      }
+    }
+
+    def init:Callback = {
+      Callback {
+        val p = $.props.runNow()
+        p.node.value.foreach(str=>{
+          val s = $.state.runNow()
+          $.setState(new State(s.x, s.y, str)).runNow()
+        })
       }
     }
 
@@ -78,13 +88,13 @@ object Node {
         ^.left := state.x + "px",
         ^.top := state.y + "px",
         ^.position := "absolute",
-        props.node.name + " | " + props.node.value
+        state.v
       )
     }
   }
 
   val component = ReactComponentB[Props]("DrawNode")
-    .initialState[State](State(0, 0))
+    .initialState[State](State(0, 0, ""))
     .renderBackend[Backend]
     .configure(
       // Listen to window mousemove/mouseup events within the component
@@ -99,6 +109,7 @@ object Node {
         _ => dom.window
       )
     )
+    .componentWillMount(_.backend.init)
     .build
 
   def apply(P: Props) =
