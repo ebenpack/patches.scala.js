@@ -1,41 +1,45 @@
 package patches.Node.Math
 
-import monifu.concurrent.Implicits.globalScheduler
+import monix.execution.Scheduler.Implicits.global
+import monix.reactive.subjects.BehaviorSubject
 import patches.IO._
 import patches.Node.Node
 
 abstract class Binary(
                        op: (Double, Double) => Double,
                        name: String,
-                       default: DoubleMessage = DoubleMessage(0)
+                       default: Message = DoubleMessage(0)
                      ) extends Node(name) {
 
   val leftInput = Input[Message]("A", default)
   val rightInput = Input[Message]("B", default)
   val resultOutput = Output[Message]("C", default)
 
-  protected var leftVal, rightVal, resultVal: Double = default.value
-  protected val left = leftInput.in
-    .collect({
-      case m: DoubleMessage => m
-      case m: IntMessage => m.toDoubleMessage
-    })
+  private val left = BehaviorSubject(default)
+  private val cancelLeft = leftInput.in.subscribe(left)
+  protected val hotLeft = left.behavior(default)
+  hotLeft.connect()
 
-  protected val right = rightInput.in
-    .collect({
-      case m: DoubleMessage => m
-      case m: IntMessage => m.toDoubleMessage
-    })
+  private val right = BehaviorSubject(default)
+  private val cancelRight = rightInput.in.subscribe(right)
+  protected val hotRight = right.behavior(default)
+  hotRight.connect()
 
-  protected val result = left.combineLatest(right)
-    .map({
-      case (l, r) =>
-        leftVal = l.value
-        rightVal = r.value
-        resultVal = op(l.value, r.value)
-        DoubleMessage(resultVal)
-    })
-  result.foreach(resultOutput.update(_))
+  private val result = BehaviorSubject(default)
+  private val cancelResult = resultOutput.out.subscribe(result)
+  protected val hotResult = result.behavior(default)
+  hotResult.connect()
+
+  hotLeft.collect({
+    case m: DoubleMessage => m
+    case m: IntMessage => m.toDoubleMessage
+  }).combineLatest(hotRight.collect({
+    case m: DoubleMessage => m
+    case m: IntMessage => m.toDoubleMessage
+  })).map({
+    case (l, r) =>
+      DoubleMessage(op(l.value, r.value))
+  }).foreach(resultOutput.update(_))
 
   val inputs = List[Input[Message]](
     leftInput,

@@ -1,19 +1,18 @@
 package patches.Node
 
-import monifu.concurrent.Implicits.globalScheduler
-import monifu.concurrent.cancelables.BooleanCancelable
-import monifu.reactive.Ack
-import monifu.reactive.Ack.Continue
-import patches.IO.{Input, Message, Output}
 
-import scala.concurrent.Future
+import monix.execution.Scheduler.Implicits.global
+import monix.execution.Cancelable
+import monix.execution.Ack.Continue
+import monix.reactive.Observable
+import patches.IO.{Input, Message, Output}
 
 abstract class Node(val name: String) {
   val inputs: List[Input[Message]]
   val outputs: List[Output[Message]]
-  private var disconnects = Map[(Input[_], Output[_]), BooleanCancelable]()
+  private var disconnects = Map[(Input[_], Output[_]), Cancelable]()
 
-  def value: String
+  def value: Observable[String]
 
   def connect(i: Input[Message], o: Output[Message]) = (i, o) match {
     case (in, out) if in.canConnect(out) && !disconnects.contains((in, out)) => {
@@ -28,7 +27,7 @@ abstract class Node(val name: String) {
   }
 
   def disconnect(i: Input[Message], o: Output[Message]) = {
-    disconnects.get((i, o)).map(_.cancel())
+    disconnects.get((i, o)).foreach(_.cancel())
     disconnects = disconnects - ((i, o))
   }
 
