@@ -9,12 +9,10 @@ import scala.reflect.ClassTag
 class Input[T](name: String, initial: T)(implicit val tag: ClassTag[T]) {
 
 
-  private val input = ConcurrentSubject.behavior(initial, DropOld(100))
-  val in = input.behavior(initial)
-  in.connect()
+  val in = ConcurrentSubject.behavior(initial, DropOld(100))
   def canConnect(o: Output[_]) = o.tag == tag
 
-  def update(value: T) = input.onNext(value)
+  def update(value: T) = in.onNext(value)
 
 }
 

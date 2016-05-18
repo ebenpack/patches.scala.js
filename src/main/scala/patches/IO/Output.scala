@@ -8,10 +8,8 @@ import scala.reflect.ClassTag
 
 class Output[T](name: String, initial: T)(implicit val tag: ClassTag[T]) {
 
-  private val output = ConcurrentSubject.behavior(initial, DropOld(100))
-  val out = output.behavior(initial)
-  out.connect()
-  def update(value: T) = output.onNext(value)
+  val out = ConcurrentSubject.behavior(initial, DropOld(100))
+  def update(value: T) = out.onNext(value)
 }
 
 object Output {
