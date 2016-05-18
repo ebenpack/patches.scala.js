@@ -4,26 +4,37 @@ import patches.Node.{Node => N}
 import japgolly.scalajs.react._
 import japgolly.scalajs.react.vdom.prefix_<^._
 import japgolly.scalajs.react.extra.OnUnmount
+import patches.Node.Math.Sum
 
 object Canvas {
 
-  case class Props(nodes: List[N])
+  case class State(nodes: List[N])
 
-  class Backend($: BackendScope[Props, Unit]) extends OnUnmount {
+  class Backend($: BackendScope[Unit, State]) extends OnUnmount {
 
-    def render(props: Props) = {
+    def addNode(e: ReactMouseEvent) =
+      $.modState(s => s.copy(Sum() :: s.nodes))
+
+    def render(s: State) = {
       <.div(
-        props.nodes.map(n=>
-          patches.Draw.Node(patches.Draw.Node.Props(n))()
-        ).toJsArray
+        <.div(
+          s.nodes.map(n =>
+            patches.Draw.Node(patches.Draw.Node.Props(n))()
+          ).toJsArray
+        ),
+        <.button(
+          ^.onMouseDown ==> addNode,
+          "Add Node"
+        )
       )
     }
   }
 
-  val component = ReactComponentB[Props]("DrawNode")
+  val component = ReactComponentB[Unit]("Canvas")
+    .initialState[State](State(List[N]()))
     .renderBackend[Backend]
     .build
 
-  def apply(P: Props) =
-    component.withProps(P)
+  def apply() =
+    component
 }

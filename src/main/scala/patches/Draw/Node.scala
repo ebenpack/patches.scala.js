@@ -49,12 +49,11 @@ object Node {
             new Mouse(startPosX + deltaX, startPosY + deltaY, m.eventType)
           })
       })
-      .foreach(m => {
-        val s = $.state.runNow()
-        $.setState(
-          new State(m.clientX.toInt, m.clientY.toInt, s.v)
+      .foreach(m =>
+        $.modState(
+          _.copy(x = m.clientX.toInt, y = m.clientY.toInt)
         ).runNow()
-      })
+      )
 
     def handleMouseDown(e: ReactMouseEventH) =
       Callback {
@@ -71,19 +70,18 @@ object Node {
       }
     }
 
-    def init:Callback = {
+    def init: Callback = {
       Callback {
         val p = $.props.runNow()
-        p.node.value.foreach(str=>{
-          val s = $.state.runNow()
-          $.setState(new State(s.x, s.y, str)).runNow()
-        })
+        p.node.value.foreach(str =>
+          $.modState(_.copy(v = str)).runNow()
+        )
       }
     }
 
     def render(props: Props, state: State) = {
       <.div(
-        ^.className := "draggable",
+        ^.className := "draggable node",
         ^.onMouseDown ==> handleMouseDown,
         ^.left := state.x + "px",
         ^.top := state.y + "px",
