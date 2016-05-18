@@ -1,16 +1,15 @@
 package patches.Node.Math
 
-import monix.execution.Scheduler.Implicits.global
 import patches.IO.DoubleMessage
 
 class Product extends Binary(_ * _, "Product") {
-  val value = hotLeft.collect({
+  val value = left.collect({
     case m: DoubleMessage => m
   }).combineLatest(
-    hotRight.collect({
-    case m: DoubleMessage => m
-  })
-  ).combineLatest(hotResult.collect({
+    right.collect({
+      case m: DoubleMessage => m
+    })
+  ).combineLatest(result.collect({
     case m: DoubleMessage => m
   })).map(v => {
     val l = v._1._1.value

@@ -15,25 +15,19 @@ abstract class Binary(
   val rightInput = Input[Message]("B", default)
   val resultOutput = Output[Message]("C", default)
 
-  private val left = BehaviorSubject(default)
+  protected val left = BehaviorSubject(default)
   private val cancelLeft = leftInput.in.subscribe(left)
-  protected val hotLeft = left.behavior(default)
-  hotLeft.connect()
 
-  private val right = BehaviorSubject(default)
+  protected val right = BehaviorSubject(default)
   private val cancelRight = rightInput.in.subscribe(right)
-  protected val hotRight = right.behavior(default)
-  hotRight.connect()
 
-  private val result = BehaviorSubject(default)
+  protected val result = BehaviorSubject(default)
   private val cancelResult = resultOutput.out.subscribe(result)
-  protected val hotResult = result.behavior(default)
-  hotResult.connect()
 
-  hotLeft.collect({
+  left.collect({
     case m: DoubleMessage => m
     case m: IntMessage => m.toDoubleMessage
-  }).combineLatest(hotRight.collect({
+  }).combineLatest(right.collect({
     case m: DoubleMessage => m
     case m: IntMessage => m.toDoubleMessage
   })).map({

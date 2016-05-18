@@ -1,20 +1,16 @@
 package patches.Node.Math
 
-import monix.execution.Scheduler.Implicits.global
-import patches.IO.{DoubleMessage, IntMessage}
+import patches.IO.DoubleMessage
 
 class Sum extends Binary(_ + _, "Sum") {
-  val value = hotLeft.collect({
+  val value = left.collect({
     case m: DoubleMessage => m
-    case m: IntMessage => m.toDoubleMessage
   }).combineLatest(
-    hotRight.collect({
+    right.collect({
       case m: DoubleMessage => m
-      case m: IntMessage => m.toDoubleMessage
     })
-  ).combineLatest(hotResult.collect({
+  ).combineLatest(result.collect({
     case m: DoubleMessage => m
-    case m: IntMessage => m.toDoubleMessage
   })).map(v => {
     val l = v._1._1.value
     val r = v._1._2.value
