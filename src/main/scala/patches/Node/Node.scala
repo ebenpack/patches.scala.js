@@ -1,9 +1,7 @@
 package patches.Node
 
-
 import monix.execution.Scheduler.Implicits.global
 import monix.execution.Cancelable
-import monix.execution.Ack.Continue
 import monix.reactive.Observable
 import patches.IO.{Input, Message, Output}
 
@@ -16,10 +14,7 @@ abstract class Node(val name: String) {
 
   def connect(i: Input[Message], o: Output[Message]) = (i, o) match {
     case (in, out) if in.canConnect(out) && !disconnects.contains((in, out)) => {
-      val cancel = out.out.subscribe(f => {
-        in.update(f)
-        Continue
-      })
+      val cancel = out.out.subscribe(in.in)
       disconnects = disconnects +
         ((in, out) -> cancel)
     }
