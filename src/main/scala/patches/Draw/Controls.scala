@@ -19,6 +19,7 @@ object Controls {
         props.c.controls.map {
           case (packageName, packageMap) =>
             <.div(
+              ^.key := packageName,
               ^.className := "control",
               <.h3(
                 packageName
@@ -26,6 +27,7 @@ object Controls {
               packageMap.map {
                 case (a, b) =>
                   <.div(
+                    ^.key := packageName + '.' + a,
                     <.a(
                       "Add " + a,
                       ^.onClick --> props.dispatch(AddNode(b()))
@@ -38,7 +40,7 @@ object Controls {
     }
   }
 
-  val controls = ReactComponentB[Props]("Node")
+  val controls = ReactComponentB[Props]("Controls")
     .renderBackend[Backend]
     .build
 
