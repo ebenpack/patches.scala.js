@@ -1,29 +1,67 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>Example Scala.js application</title>
-  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
-  <style>
+    <title>Example Scala.js application</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+    <style>
+    * {
+        box-sizing: border-box;
+    }
     .draggable {
-      width: 100px;
-      height : 100px;
-      position : absolute;
-      left : 0;
-      top : 0;
-      border : 1px solid black;
-      cursor: move;
-      -webkit-user-select: none;
-      -moz-user-select: none;
-      -ms-user-select: none;
-      user-select: none;
+        width: 100px;
+        height : 100px;
+        position : absolute;
+        left : 0;
+        top : 0;
+        border : 1px solid black;
+        cursor: move;
+        -webkit-user-select: none;
+        -moz-user-select: none;
+        -ms-user-select: none;
+        user-select: none;
+    }
+    .canvas {
+        position: relative;
+        float:left;
+        width: 100%;
+        height: 100vh;
+        background-color: #3c464c;
+        overflow: hidden;
+    }
+    .controls {
+        position: absolute;
+        left: 80%;
+        top: 5%;
+        width: 20%;
+        height: 80vh;
+        background-color: #3e3e3e;
     }
     .node {
-      border: 1px solid black;
+        font-family: 'PT Mono', 'Andale Mono', 'Fira mono', 'Menlo', sans-serif;
+        color: #111;
+        font-size: 0.7em;
+        min-width: 180px;
+        min-height: 40px;
+        background-color: #50607e;
+        box-shadow: -1px 5px 13px 1px rgba(30,30,30,0.8);
+        border-color: rgba(255,255,255,0.4);
+        border-width: 1px;
+        border-radius: 2px 2px 0 0;
+        position: absolute;
+    }
+    .node .title {
+        width: 100%;
+        background-color: #617b79;
+    }
+    .input, .output {
+        position: absolute;
+        border-radius: 3px;
+        background-color: red;
     }
     #playground {
-      position: relative;
+        position: relative;
     }
-  </style>
+    </style>
 </head>
 <body>
 
