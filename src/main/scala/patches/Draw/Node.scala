@@ -24,6 +24,7 @@ object Node {
       val p = $.props.runNow()
       (p.node.x, p.node.y)
     }
+
     def onMove(x: Double, y: Double) = {
       val p = $.props.runNow()
       p.dispatch(MoveNode(p.node, x.toInt, y.toInt)).runNow()
@@ -127,5 +128,5 @@ object Node {
     .build
 
   def apply(dispatch: AnyRef => Callback, n: NodeModel) =
-    node(Props(dispatch, n))
+    node.withKey(n.uuid.toString)(Props(dispatch, n))
 }
