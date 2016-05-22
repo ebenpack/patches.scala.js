@@ -12,7 +12,8 @@ persistLauncher in Compile := true
 libraryDependencies ++= Seq(
   "io.monix" %%% "monix" % "2.0-RC2",
   "com.github.japgolly.scalajs-react" %%% "core" % "0.11.1",
-  "com.github.japgolly.scalajs-react" %%% "extra" % "0.11.1"
+  "com.github.japgolly.scalajs-react" %%% "extra" % "0.11.1",
+  "me.chrons" %%% "diode-react" % "0.5.2"
 )
 
 jsDependencies ++= Seq(
