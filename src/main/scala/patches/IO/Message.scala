@@ -13,3 +13,7 @@ case class IntMessage(value: Int) extends Message {
 case class StringMessage(value: String) extends Message
 
 case class BooleanMessage(value: Boolean) extends Message
+
+case class BigIntMessage(value: BigInt) extends Message
+
+case class BigDecimalMessage(value: BigDecimal) extends Message
