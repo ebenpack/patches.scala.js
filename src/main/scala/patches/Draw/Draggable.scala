@@ -18,6 +18,8 @@ trait Draggable {
                val eventType: String
              )
 
+
+
   val mouseDownChannel = ConcurrentSubject[Mouse](MulticastStrategy.publish, DropOld(100))
   val mouseMoveChannel = ConcurrentSubject[Mouse](MulticastStrategy.publish, DropOld(100))
 

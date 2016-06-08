@@ -17,8 +17,6 @@ object Node {
                   )
 
   class Backend($: BackendScope[Props, Unit]) extends OnUnmount with Draggable {
-    val width = 100
-    val height = 100
 
     def getXY() = {
       val p = $.props.runNow()
@@ -54,8 +52,9 @@ object Node {
     def init: Callback = {
       Callback {
         val p = $.props.runNow()
-        p.node.node.value.foreach(str =>
+        p.node.node.value.foreach(str => {
           p.dispatch(UpdateNodeValue(p.node, str)).runNow()
+        }
         )
       }
     }
@@ -65,15 +64,15 @@ object Node {
       val x = p.node.x
       val y = p.node.y
       val v = p.node.v
+      val uuid = p.node.uuid
+      val dispatch = p.dispatch
       <.div(
-        ^.className := "draggable node",
-        ^.onMouseDown ==> handleMouseDown,
+        ^.className := "node draggable",
         ^.left := x + "px",
         ^.top := y + "px",
-        ^.width := width,
-        ^.height := height,
         <.div(
-          ^.className := "title",
+          ^.className := "handle title",
+          ^.onMouseDown ==> handleMouseDown,
           <.div(
             ^.onMouseDown ==> handleClose,
             ^.position := "absolute",
@@ -82,29 +81,34 @@ object Node {
           ),
           node.name
         ),
-        v,
-        node.inputs.zipWithIndex.map(n => {
-          val index = n._2
-          val increment = height / (node.inputs.length + 1)
-          <.div(
-            ^.className := "input",
-            ^.left := "-3px",
-            ^.top := ((increment * (index + 1)) - 3) + "px",
-            ^.width := "6px",
-            ^.height := "6px"
-          )
-        }),
-        node.outputs.zipWithIndex.map(n => {
-          val index = n._2
-          val increment = height / (node.outputs.length + 1)
-          <.div(
-            ^.className := "input",
-            ^.right := "-3px",
-            ^.top := ((increment * (index + 1)) - 3) + "px",
-            ^.width := "6px",
-            ^.height := "6px"
-          )
-        })
+        <.div(
+          ^.className := "body",
+          v,
+          node.inputs.zipWithIndex.map {
+            case (input, index) =>
+              val increment = 100.0 / (node.inputs.length + 1)
+              patches.Draw.InputOutput(
+                dispatch,
+                Left(input),
+                input.name,
+                increment,
+                index,
+                uuid
+              )
+          },
+          node.outputs.zipWithIndex.map {
+            case (output, index) =>
+              val increment = 100.0 / (node.outputs.length + 1)
+              patches.Draw.InputOutput(
+                dispatch,
+                Right(output),
+                output.name,
+                increment,
+                index,
+                uuid
+              )
+          }
+        )
       )
     }
   }
@@ -113,7 +117,7 @@ object Node {
     .renderBackend[Backend]
     .configure(
       // Listen to window mousemove/mouseup events within the component
-      EventListener[dom.MouseEvent].install(
+      EventListener[MouseEvent].install(
         "mouseup",
         _.backend.handleMouseMove,
         _ => dom.window
