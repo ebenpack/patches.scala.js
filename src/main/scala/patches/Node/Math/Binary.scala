@@ -1,7 +1,7 @@
 package patches.Node.Math
 
-import monix.execution.Scheduler.Implicits.global
 import monix.reactive.subjects.BehaviorSubject
+import monix.execution.Scheduler.Implicits.global
 import patches.IO._
 import patches.Node.Node
 
@@ -24,7 +24,16 @@ abstract class Binary(
   protected val result = BehaviorSubject(default)
   private val cancelResult = resultOutput.out.subscribe(result)
 
-  left.collect({
+  def destroy = {
+    cancelLeft.cancel()
+    cancelRight.cancel()
+    cancelResult.cancel()
+    leftInput.destroy
+    rightInput.destroy
+    resultOutput.destroy
+  }
+
+    left.collect({
     case m: DoubleMessage => m
     case m: IntMessage => m.toDoubleMessage
   }).combineLatest(right.collect({

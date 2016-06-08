@@ -8,5 +8,5 @@ abstract class Node(val name: String) {
   val outputs: List[Output[Message]]
 
   def value: Observable[String]
-
+  def destroy: Unit
 }
