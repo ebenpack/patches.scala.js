@@ -11,7 +11,9 @@ persistLauncher in Compile := true
 
 libraryDependencies ++= Seq(
   "com.github.japgolly.scalajs-react" %%% "core" % "0.11.1",
-  "com.github.japgolly.scalajs-react" %%% "extra" % "0.11.1"
+  "com.github.japgolly.scalajs-react" %%% "extra" % "0.11.1",
+  "com.codemettle.jsactor" %%% "jsactor" % "0.6.1",
+  "me.chrons" %%% "diode-react" % "0.5.2"
 )
 
 jsDependencies ++= Seq(
