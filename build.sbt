@@ -1,4 +1,3 @@
-// Turn this project into a Scala.js project by importing these settings
 enablePlugins(ScalaJSPlugin)
 
 name := "Example"
@@ -10,9 +9,9 @@ scalaVersion := "2.11.8"
 persistLauncher in Compile := true
 
 libraryDependencies ++= Seq(
-  "io.monix" %%% "monix" % "2.0-RC5",
   "com.github.japgolly.scalajs-react" %%% "core" % "0.11.1",
   "com.github.japgolly.scalajs-react" %%% "extra" % "0.11.1",
+//  "com.codemettle.jsactor" %%% "jsactor" % "0.6.1",
   "me.chrons" %%% "diode-react" % "0.5.2"
 )
 
