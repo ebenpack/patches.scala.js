@@ -7,13 +7,13 @@ class ActorSystem {
     case _ =>
   }
 
-  private[Actor] def dispatch(sender: ActorRef, recipient: ActorRef, msg: Any) =
-    actors.get(recipient).foreach(a =>
+  private[Actor] def dispatch(env: Envelope) =
+    actors.get(env.recipient).foreach(a =>
       if (a.behaviorStack.nonEmpty) {
-        a.behaviorStack.head.orElse(noMatch)(msg)
+        a.behaviorStack.head.orElse(noMatch)(env.msg)
       }
       else {
-        a.receive.orElse(noMatch)(msg)
+        a.receive.orElse(noMatch)(env.msg)
       }
     )
 
