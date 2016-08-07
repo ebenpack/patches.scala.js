@@ -4,6 +4,8 @@ import org.scalajs.dom
 import org.scalajs.dom._
 import patches.Messages._
 
+import scala.scalajs.js
+
 trait DraggableActor extends DomActor {
   var prevX: Option[Double] = None
   var prevY: Option[Double] = None
@@ -11,19 +13,21 @@ trait DraggableActor extends DomActor {
   var x = 0.0
   var y = 0.0
 
-  def onMouseDown(e: MouseEvent) {
+  protected def onMouseDown(e: MouseEvent) {
     prevX = Some(e.clientX)
     prevY = Some(e.clientY)
     dragging = true
   }
 
-  dom.document.addEventListener("mouseup",
+  private val onMouseUp: js.Function1[MouseEvent, Unit] =
     (e: MouseEvent) => {
+      println("UPS!")
       prevX = None
       prevY = None
       dragging = false
-    })
-  dom.document.addEventListener("mousemove",
+    }
+
+  private val onMouseMove: js.Function1[MouseEvent, Unit] =
     (e: MouseEvent) => {
       if (dragging) {
         self ! Move(
@@ -33,5 +37,14 @@ trait DraggableActor extends DomActor {
         prevX = Some(e.clientX)
         prevY = Some(e.clientY)
       }
-    })
+    }
+
+  dom.document.addEventListener("mouseup", onMouseUp)
+  dom.document.addEventListener("mousemove", onMouseMove)
+
+  override def postStop() = {
+    super.postStop()
+    dom.document.removeEventListener("mouseup", onMouseUp)
+    dom.document.removeEventListener("mousemove", onMouseMove)
+  }
 }
