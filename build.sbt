@@ -9,28 +9,12 @@ scalaVersion := "2.11.8"
 
 persistLauncher in Compile := true
 
+resolvers += Resolver.sonatypeRepo("snapshots")
+
 libraryDependencies ++= Seq(
-  "com.github.japgolly.scalajs-react" %%% "core" % "0.11.1",
-  "com.github.japgolly.scalajs-react" %%% "extra" % "0.11.1",
-  "com.codemettle.jsactor" %%% "jsactor" % "0.6.1",
-  "me.chrons" %%% "diode-react" % "0.5.2"
+  "com.typesafe" % "config" % "1.3.0",
+  "com.lihaoyi" %%% "scalatags" % "0.6.0",
+  "eu.unicredit" %%% "akkajsactor" % "0.1.2-SNAPSHOT"
 )
 
-jsDependencies ++= Seq(
-  "org.webjars.bower" % "react" % "15.0.2"
-    / "react-with-addons.js"
-    minified "react-with-addons.min.js"
-    commonJSName "React",
-
-  "org.webjars.bower" % "react" % "15.0.2"
-    / "react-dom.js"
-    minified "react-dom.min.js"
-    dependsOn "react-with-addons.js"
-    commonJSName "ReactDOM",
-
-  "org.webjars.bower" % "react" % "15.0.2"
-    / "react-dom-server.js"
-    minified "react-dom-server.min.js"
-    dependsOn "react-dom.js"
-    commonJSName "ReactDOMServer"
-)
+jsDependencies ++= Seq()
