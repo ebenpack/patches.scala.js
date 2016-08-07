@@ -54,5 +54,5 @@ class Node[T](var value: T, title: String) extends DraggableActor {
 object Node {
   def apply[T](value: T, title: String): Node[T] = new Node[T](value, title)
 
-  def props[T](value: T, title: String): Props = Props(Node[T](value, title))
+  def props[T](value: T, title: String): Props = Props(new Node[T](value, title))
 }

@@ -4,10 +4,8 @@ import org.scalajs.dom.MouseEvent
 import patches.Messages.AddNode
 import patches.Actor.DomActor
 import patches.Node.Node
-import patches.Node.Node.Node
 
 import scalatags.JsDom.all._
-
 
 class Controls extends DomActor {
   def template = div(
