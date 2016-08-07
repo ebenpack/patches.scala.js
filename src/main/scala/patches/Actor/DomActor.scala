@@ -5,9 +5,13 @@ import org.scalajs.dom.raw
 import scalatags.JsDom._
 
 object DomMsgs {
+
   case object NodeAsk
+
   case class Parent(node: raw.Node)
+
   case class Remove(node: raw.Node)
+
 }
 
 import DomMsgs._
@@ -79,6 +83,7 @@ trait DomActorWithParams[T] extends DomActor {
   val initValue: T
 
   def template(): TypedTag[_ <: raw.Element] = null
+
   def template(value: T): TypedTag[_ <: raw.Element]
 
   override protected def initDom(p: raw.Node) = {

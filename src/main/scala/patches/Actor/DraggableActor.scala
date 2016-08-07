@@ -12,10 +12,10 @@ trait DraggableActor extends DomActor {
   var y = 0.0
 
   def onMouseDown(e: MouseEvent) {
-      prevX = Some(e.clientX)
-      prevY = Some(e.clientY)
-      dragging = true
-    }
+    prevX = Some(e.clientX)
+    prevY = Some(e.clientY)
+    dragging = true
+  }
 
   dom.document.addEventListener("mouseup",
     (e: MouseEvent) => {

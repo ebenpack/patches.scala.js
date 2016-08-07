@@ -9,6 +9,7 @@ import scalatags.JsDom.styles2.transform
 
 class Node[T](var value: T, title: String) extends DraggableActor {
   var order = 0
+
   def template = div(
     div(
       div(
