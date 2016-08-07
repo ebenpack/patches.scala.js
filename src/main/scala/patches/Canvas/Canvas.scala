@@ -9,8 +9,8 @@ import scalatags.JsDom.all._
 
 class Canvas(hook: String) extends DomActor {
   var childs = List(
-    context.actorOf(Props(Node(1))),
-    context.actorOf(Props(Node(2)))
+    context.actorOf(Props(Node(1, "Sum"))),
+    context.actorOf(Props(Node(2, "Sum")))
   )
   context.actorOf(Props(Controls()))
   override val domElement = Some(getElementById(hook))
