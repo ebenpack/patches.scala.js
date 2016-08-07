@@ -3,102 +3,11 @@
 <head>
     <title>Example Scala.js application</title>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
-    <style>
-    * {
-        box-sizing: border-box;
-    }
-    body {
-        margin: 0;
-    }
-    .draggable {
-        position : absolute;
-        left : 0;
-        top : 0;
-
-    }
-    .handle {
-        cursor: move;
-        -webkit-user-select: none;
-        -moz-user-select: none;
-        -ms-user-select: none;
-        user-select: none;
-    }
-    .canvas {
-        position: relative;
-        float:left;
-        width: 100%;
-        height: 100vh;
-        background-color: #3c464c;
-        overflow: hidden;
-        -webkit-touch-callout: none;
-        -webkit-user-select: none;
-        -khtml-user-select: none;
-        -moz-user-select: none;
-        -ms-user-select: none;
-        user-select: none;
-    }
-    .controls {
-        position: absolute;
-        left: 80%;
-        top: 5%;
-        width: 20%;
-        height: 80vh;
-        background-color: #3e3e3e;
-    }
-    .node {
-        font-family: 'PT Mono', 'Andale Mono', 'Fira mono', 'Menlo', sans-serif;
-        color: #111;
-        font-size: 0.7em;
-        min-width: 180px;
-        background-color: #50607e;
-        box-shadow: -1px 5px 13px 1px rgba(30,30,30,0.8);
-        border-color: rgba(255,255,255,0.4);
-        border-width: 1px;
-        border-radius: 2px 2px 0 0;
-        position: absolute;
-    }
-    .node .title {
-        width: 100%;
-        background-color: #617b79;
-        padding: 5px;
-    }
-    .node .body {
-        padding: 5px;
-        position: relative;
-        min-height: 80px;
-        color: #CCC;
-    }
-    .input, .output {
-        position: absolute;
-    }
-    .input {
-        margin-right: 5px;
-        left: -3px
-    }
-    .output {
-        margin-left: 5px;
-        right: -3px;
-    }
-    .input .connect, .output .connect {
-        border-radius: 3px;
-        background-color: red;
-        display: inline-block;
-    }
-   .patch {
-       height: 2px;
-       background-color: #CCC;
-       border: none;
-       margin: 0;
-   }
-    #playground {
-        position: relative;
-    }
-    </style>
+    <link rel="stylesheet" href="styles.css">
 </head>
 <body>
 
 <div id="playground"></div>
-<script src="./target/scala-2.11/example-jsdeps.js"></script>
 <script src="./target/scala-2.11/example-fastopt.js"></script>
 <script src="./target/scala-2.11/example-launcher.js"></script>
 
