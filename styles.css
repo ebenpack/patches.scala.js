@@ -54,7 +54,7 @@ body {
 }
 .node .close {
     position: absolute;
-    right: 0;
+    right: 2%;
 }
 .node .title {
     width: 100%;

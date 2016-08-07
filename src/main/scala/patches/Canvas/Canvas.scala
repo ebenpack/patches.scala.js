@@ -1,17 +1,18 @@
-package patches
+package patches.Canvas
 
-import akka.actor.Props
-import patches.Actor.DomActor
+import akka.actor.{ActorRef, Props}
 import org.scalajs.dom.document.getElementById
-import patches.Messages._
+import patches.Actor.DomMsgs.Remove
+import patches.Messages.{Reorder, _}
+import patches.Actor.DomActor
 
 import scalatags.JsDom.all._
 
+import scala.concurrent.duration._
+import scala.concurrent.ExecutionContext.Implicits.global
+
 class Canvas(hook: String) extends DomActor {
-  var childs = List(
-    context.actorOf(Props(Node(1, "Sum"))),
-    context.actorOf(Props(Node(2, "Sum")))
-  )
+  var nodes = List[ActorRef]()
   context.actorOf(Props(Controls()))
   override val domElement = Some(getElementById(hook))
 
@@ -19,14 +20,27 @@ class Canvas(hook: String) extends DomActor {
     `class` := "canvas"
   )
 
-  override def operative = domManagement orElse {
+  def removeNode: Receive = {
+    case Remove(child) =>
+      thisNode.removeChild(child)
+      nodes = nodes.filterNot(_ == sender())
+  }
+
+  override def operative = removeNode orElse domManagement orElse {
     case Reorder =>
-      val (l, r) = childs.partition(_.equals(sender()))
-      childs = r ++ l
-      childs.zipWithIndex.foreach({
+      val (l, r) = nodes.partition(_.equals(sender()))
+      nodes = r ++ l
+      nodes.zipWithIndex.foreach({
         case (child, index) => child ! Reorder(index)
       })
+    case AddNode(n) =>
+      nodes = context.actorOf(n) :: nodes
+      self ! Reorder
+
+
   }
+
+
 }
 
 object Canvas {

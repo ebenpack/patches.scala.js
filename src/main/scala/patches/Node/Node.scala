@@ -1,8 +1,9 @@
-package patches
+package patches.Node
 
+import akka.actor.Props
 import org.scalajs.dom._
-import patches.Actor.DraggableActor
 import patches.Messages._
+import patches.Actor.DraggableActor
 
 import scalatags.JsDom.all._
 import scalatags.JsDom.styles2.transform
@@ -47,8 +48,11 @@ class Node[T](var value: T, title: String) extends DraggableActor {
       order = n
       self ! Update
   }
+
 }
 
 object Node {
   def apply[T](value: T, title: String): Node[T] = new Node[T](value, title)
+
+  def props[T](value: T, title: String): Props = Props(Node[T](value, title))
 }

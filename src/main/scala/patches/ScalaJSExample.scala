@@ -2,6 +2,7 @@ package patches
 
 import patches.Actor.AkkaConfig.config
 import akka.actor._
+import patches.Canvas.Canvas
 
 import scala.scalajs.js
 
