@@ -8,8 +8,8 @@ trait DraggableActor extends DomActor {
   var prevX: Option[Double] = None
   var prevY: Option[Double] = None
   var dragging = false
-  var x = 100.0
-  var y = 100.0
+  var x = 0.0
+  var y = 0.0
 
   def onMouseDown(e: MouseEvent) {
       prevX = Some(e.clientX)
