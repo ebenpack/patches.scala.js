@@ -1,7 +1,6 @@
-// Turn this project into a Scala.js project by importing these settings
 enablePlugins(ScalaJSPlugin)
 
-name := "Example"
+name := "patches"
 
 version := "0.1-SNAPSHOT"
 

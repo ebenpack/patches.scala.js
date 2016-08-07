@@ -10,7 +10,7 @@ object Patches extends js.JSApp {
   def main(): Unit = {
     val system = ActorSystem("akkajsapp", config)
     val bod = system.actorOf(
-      Props(Canvas("playground")),
+      Props(Canvas("patches")),
       "body"
     )
   }
