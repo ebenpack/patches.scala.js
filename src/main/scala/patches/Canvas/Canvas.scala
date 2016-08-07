@@ -1,54 +1,34 @@
-package patches.Canvas
+package patches
 
-import jsactor.{JsActor, JsActorSystem, JsProps}
-import jsactor.logging.impl.JsNullActorLoggerFactory
-import patches.IO.Messages.{AddNode, MoveNode, RemoveNode, SystemMessage}
-import patches.Patch.Patch
-import patches.Node.Node
+import akka.actor.Props
+import patches.Actor.DomActor
+import org.scalajs.dom.document.getElementById
+import patches.Messages._
 
-class Canvas {
+import scalatags.JsDom.all._
 
-  object Listener extends JsActor {
-    def receive = {
-      case AddNode(n) => addNode(n)
-      case MoveNode(n, x, y) => moveNode(n, x, y)
-      case RemoveNode(n) => removeNode(n)
-    }
+class Canvas(hook: String) extends DomActor {
+  var childs = List(
+    context.actorOf(Props(Node(1))),
+    context.actorOf(Props(Node(2)))
+  )
+  context.actorOf(Props(Controls()))
+  override val domElement = Some(getElementById(hook))
+
+  def template = div(
+    `class` := "canvas"
+  )
+
+  override def operative = domManagement orElse {
+    case Reorder =>
+      val (l, r) = childs.partition(_.equals(sender()))
+      childs = r ++ l
+      childs.zipWithIndex.foreach({
+        case (child, index) => child ! Reorder(index)
+      })
   }
+}
 
-  var nodes = List[Node]()
-  var patches = List[Patch]()
-  val sys = JsActorSystem("canvas", JsNullActorLoggerFactory)
-  val listener = sys.actorOf(JsProps(Listener))
-  sys.eventStream.subscribe(listener, classOf[SystemMessage])
-
-  def addNode(n: Node) = {
-    val f = sys.actorOf(JsProps(n))
-    nodes = nodes :+ n
-  }
-
-
-  def moveNode(n: Node, x: Int, y: Int) =
-    nodes.find(_ == n).foreach(a => {
-      a.x = x
-      a.y = y
-    })
-
-  def reorderNode(n: Node) =
-    nodes = nodes.span(_ != n) match {
-      case (as, h :: bs) => as ++ bs :+ h
-      case _ => nodes
-    }
-
-//  def updateNodeValue(n: Node, str: String) =
-//  nodes.find(_ == n).foreach(_.value = str)
-
-  def removeNode(n: Node) =
-    nodes = nodes.filterNot(_ == n)
-
-  def addPatch(p: Patch) =
-    patches = patches :+ p
-
-  def removePatch(p: Patch) =
-    patches = patches.filterNot(_ == p)
+object Canvas {
+  def apply(hook: String): Canvas = new Canvas(hook)
 }
