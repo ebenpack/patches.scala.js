@@ -21,7 +21,6 @@ trait DraggableActor extends DomActor {
 
   private val onMouseUp: js.Function1[MouseEvent, Unit] =
     (e: MouseEvent) => {
-      println("UPS!")
       prevX = None
       prevY = None
       dragging = false

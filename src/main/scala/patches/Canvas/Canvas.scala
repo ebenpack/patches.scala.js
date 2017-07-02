@@ -8,7 +8,7 @@ import patches.Actor.DomActor
 
 import scalatags.JsDom.all._
 
-class Canvas(hook: String) extends DomActor {
+class CanvasActor(hook: String) extends DomActor {
   var nodes = List[ActorRef]()
   context.actorOf(Props(Controls()))
   override val domElement = Some(getElementById(hook))
@@ -38,6 +38,6 @@ class Canvas(hook: String) extends DomActor {
 
 }
 
-object Canvas {
-  def apply(hook: String): Canvas = new Canvas(hook)
+object CanvasActor {
+  def apply(hook: String): CanvasActor = new CanvasActor(hook)
 }

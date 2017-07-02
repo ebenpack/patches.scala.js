@@ -1,17 +1,24 @@
 package patches
 
-import patches.Actor.AkkaConfig.config
 import akka.actor._
-import patches.Canvas.Canvas
-
+import patches.Canvas.CanvasActor
+import akkajs.Config.default
+import com.typesafe.config
 import scala.scalajs.js
 
 object Patches extends js.JSApp {
 
   def main(): Unit = {
-    val system = ActorSystem("akkajsapp", config)
+    val conf = config.ConfigFactory.parseString(
+      """
+    akka {
+      loglevel = "DEBUG"
+      stdout-loglevel = "DEBUG"
+    }""").withFallback(default)
+
+    val system = ActorSystem("akkajsapp", conf)
     val bod = system.actorOf(
-      Props(Canvas("patches")),
+      Props(CanvasActor("patches")),
       "body"
     )
   }

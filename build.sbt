@@ -4,16 +4,15 @@ name := "patches"
 
 version := "0.1-SNAPSHOT"
 
-scalaVersion := "2.11.8"
+scalaVersion := "2.12.2"
 
-persistLauncher in Compile := true
-
-resolvers += Resolver.sonatypeRepo("snapshots")
+scalaJSUseMainModuleInitializer := true
 
 libraryDependencies ++= Seq(
-  "com.typesafe" % "config" % "1.3.0",
-  "com.lihaoyi" %%% "scalatags" % "0.6.0",
-  "eu.unicredit" %%% "akkajsactor" % "0.1.2-SNAPSHOT"
+  "eu.unicredit" %%% "shocon" % "0.1.8",
+  "com.lihaoyi" %%% "scalatags" % "0.6.5",
+  "org.akka-js" %%% "akkajsactor" % "1.2.5.2",
+  "org.scalaz" %%% "scalaz-core" % "7.2.8"
 )
 
 jsDependencies ++= Seq()
